@@ -9,7 +9,8 @@ import (
 
 func main() {
 	a := abradolf.Abradolf{}
-	m := mux.NewRouter()
-	a.RegisterHandlers(m)
-	http.ListenAndServe(":8080", m)
+	r := mux.NewRouter()
+	r.StrictSlash(true)
+	a.RegisterHandlers(r)
+	http.ListenAndServe(":8080", r)
 }
