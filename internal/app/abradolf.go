@@ -1,4 +1,4 @@
-package abradolf
+package app
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 )
 
 type Abradolf struct {
@@ -15,9 +16,9 @@ type Abradolf struct {
 	Users   UsersResource
 }
 
-func New() *Abradolf {
+func New(db *gorm.DB) *Abradolf {
 	return &Abradolf{
-		Auth: AuthResource{},
+		Auth: AuthResource{DB: db},
 
 		Quizzes: QuizzesResource{},
 		Users:   UsersResource{},

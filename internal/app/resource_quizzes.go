@@ -1,4 +1,4 @@
-package abradolf
+package app
 
 import (
 	"net/http"
