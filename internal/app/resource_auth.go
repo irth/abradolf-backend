@@ -20,9 +20,43 @@ func (a *AuthResource) RegisterHandlers(r *mux.Router) {
 	r.HandleFunc("/register", a.Register).Methods("POST")
 }
 
+type authRequestBody struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func (a *AuthResource) Login(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement AuthResource.Login
-	w.Write([]byte("login"))
+	var body authRequestBody
+
+	if utils.UnmarshalBody(w, r.Body, &body) != nil {
+		return
+	}
+
+	var u models.User
+	result := a.DB.Where("username = ?", body.Username).First(&u)
+
+	if result.Error != nil {
+		utils.WriteErrorString(w, http.StatusInternalServerError, ErrDatabaseError, "Database error.")
+	}
+
+	if result.RecordNotFound() || !u.CheckPassword(body.Password) {
+		utils.WriteErrorString(w, http.StatusUnauthorized, ErrUnauthorized, "Incorrect username or password.")
+		return
+	}
+
+	t, err := models.NewAuthToken(u)
+	if err != nil {
+		utils.WriteErrorString(w, http.StatusInternalServerError, ErrUnknown, "Internal server error.")
+		return
+	}
+
+	err = a.DB.Create(t).Error
+	if err != nil {
+		utils.WriteErrorString(w, http.StatusInternalServerError, ErrDatabaseError, "Database error.")
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, t)
 }
 
 func (a *AuthResource) Logout(w http.ResponseWriter, r *http.Request) {
@@ -31,10 +65,7 @@ func (a *AuthResource) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AuthResource) Register(w http.ResponseWriter, r *http.Request) {
-	var body struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+	var body authRequestBody
 
 	if utils.UnmarshalBody(w, r.Body, &body) != nil {
 		return

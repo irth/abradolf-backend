@@ -1,11 +1,14 @@
 package app_test
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -31,9 +34,41 @@ func postRequest(handler http.HandlerFunc, path string, body string) *httptest.R
 	return w
 }
 
+func decodeResponse(t *testing.T, body *bytes.Buffer, out interface{}) {
+	err := json.NewDecoder(body).Decode(out)
+	require.Nil(t, err, "the response should contain valid JSON")
+}
+
 type errResponse struct {
 	Error string `json:"error"`
 	Code  string `json:"code"`
+}
+
+func TestLogin(t *testing.T) {
+	a, db := setup()
+	defer db.Close()
+
+	// set up an account
+	password := "testpassword"
+	u := models.User{Username: "testuser"}
+	u.SetPassword(password)
+
+	db.Create(&u)
+
+	now := time.Now()
+
+	// try to login
+	w := postRequest(a.Login, "/login", fmt.Sprintf(`{"username": "%s", "password": "%s"}`, u.Username, password))
+	require.Equal(t, http.StatusOK, w.Code, "the response code should equal 200")
+
+	var token models.AuthToken
+	decodeResponse(t, w.Body, &token) // will fail if the json is incorrect
+
+	require.NotEmpty(t, token.Token, "the token should not be empty")
+
+	t.Logf("the token is: %s", token.Token)
+
+	require.True(t, now.Before(token.Expires), "the token should not be expired")
 }
 
 func TestRegisterAccount(t *testing.T) {
@@ -67,7 +102,7 @@ func TestRegisterAccountWithEmptyUsername(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, w.Code, "the response code should equal 422")
 
 	var e errResponse
-	json.NewDecoder(w.Body).Decode(&e)
+	decodeResponse(t, w.Body, &e)
 	require.Equal(t, app.ErrUsernameEmpty, e.Code, "it should return a correct error code")
 
 	var c int
@@ -91,7 +126,7 @@ func TestRegisterAccountTwice(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, w2.Code, "the response code should equal 422")
 
 	var e errResponse
-	json.NewDecoder(w2.Body).Decode(&e)
+	decodeResponse(t, w2.Body, &e)
 	require.Equal(t, app.ErrUsernameTaken, e.Code, "it should return a correct error code")
 
 	var c int
