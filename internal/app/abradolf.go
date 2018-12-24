@@ -14,6 +14,8 @@ type Abradolf struct {
 
 	Quizzes QuizzesResource
 	Users   UsersResource
+
+	db *gorm.DB
 }
 
 func New(db *gorm.DB) *Abradolf {
@@ -22,6 +24,8 @@ func New(db *gorm.DB) *Abradolf {
 
 		Quizzes: QuizzesResource{},
 		Users:   UsersResource{},
+
+		db: db,
 	}
 }
 
@@ -30,6 +34,7 @@ func greet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a Abradolf) RegisterHandlers(r *mux.Router) {
+	r.Use(NewAuthMiddleware(a.db))
 	r.HandleFunc("/", greet)
 
 	a.Auth.RegisterHandlers(r)
