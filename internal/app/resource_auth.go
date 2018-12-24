@@ -35,12 +35,13 @@ func (a *AuthResource) Login(w http.ResponseWriter, r *http.Request) {
 	var u models.User
 	result := a.DB.Where("username = ?", body.Username).First(&u)
 
-	if result.Error != nil {
-		utils.WriteErrorString(w, http.StatusInternalServerError, ErrDatabaseError, "Database error.")
-	}
-
 	if result.RecordNotFound() || !u.CheckPassword(body.Password) {
 		utils.WriteErrorString(w, http.StatusUnauthorized, ErrUnauthorized, "Incorrect username or password.")
+		return
+	}
+
+	if result.Error != nil {
+		utils.WriteErrorString(w, http.StatusInternalServerError, ErrDatabaseError, "Database error.")
 		return
 	}
 
