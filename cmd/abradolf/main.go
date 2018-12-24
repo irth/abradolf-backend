@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
-	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/irth/abradolf-backend/internal/db"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"github.com/gorilla/mux"
 	"github.com/irth/abradolf-backend/internal/app"
