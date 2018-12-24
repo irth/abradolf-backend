@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/mux v1.6.2
 	github.com/jinzhu/gorm v1.9.2
 	github.com/magiconair/properties v1.8.0
+	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.2.2
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9

@@ -1,8 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
-
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/irth/abradolf-backend/internal/db"
 
 	"github.com/gorilla/mux"
@@ -18,5 +19,6 @@ func main() {
 	a := app.New(db)
 	a.RegisterHandlers(r)
 
+	fmt.Println("listening...")
 	http.ListenAndServe(":8080", r)
 }
