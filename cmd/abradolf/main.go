@@ -15,11 +15,11 @@ func main() {
 	r := mux.NewRouter()
 	r.StrictSlash(true)
 
-	db := db.Open("sqlite3", ":memory:")
+	db := db.Open("sqlite3", "./dev.sqlite3.db")
 
 	a := app.New(db)
 	a.RegisterHandlers(r)
 
 	fmt.Println("listening...")
-	http.ListenAndServe(":8080", r)
+	panic(http.ListenAndServe(":8080", r))
 }
