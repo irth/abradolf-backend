@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/irth/abradolf-backend/internal/utils"
 	"github.com/jinzhu/gorm"
 )
 
@@ -29,13 +30,19 @@ func New(db *gorm.DB) *Abradolf {
 	}
 }
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s, uid=%s", time.Now(), r.Context().Value("user"))
+func (a Abradolf) Greet(w http.ResponseWriter, r *http.Request) {
+	u := utils.GetUser(a.db, r)
+	un := "nil"
+	if u != nil {
+		un = u.Username
+	}
+
+	fmt.Fprintf(w, "Hello World! %s, u=%s", time.Now(), un)
 }
 
 func (a Abradolf) RegisterHandlers(r *mux.Router) {
 	r.Use(NewAuthMiddleware(a.db))
-	r.HandleFunc("/", greet)
+	r.HandleFunc("/", a.Greet)
 
 	a.Auth.RegisterHandlers(r)
 

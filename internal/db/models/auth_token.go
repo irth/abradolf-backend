@@ -1,9 +1,9 @@
 package models
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"time"
-
-	"github.com/irth/abradolf-backend/internal/utils"
 
 	"github.com/jinzhu/gorm"
 )
@@ -17,8 +17,20 @@ type AuthToken struct {
 	Expires time.Time `json:"expires"`
 }
 
+// https://blog.questionable.services/article/generating-secure-random-numbers-crypto-rand/
+func generateRandomToken(bytes int) (string, error) {
+	b := make([]byte, bytes)
+
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.URLEncoding.EncodeToString(b), err
+}
+
 func NewAuthToken(u User) (*AuthToken, error) {
-	t, err := utils.GenerateRandomToken(64)
+	t, err := generateRandomToken(64)
 
 	if err != nil {
 		return nil, err
