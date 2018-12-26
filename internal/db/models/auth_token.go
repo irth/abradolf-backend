@@ -4,12 +4,10 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 type AuthToken struct {
-	gorm.Model
+	Model
 
 	User    User      `json:"-"`
 	UserID  uint      `json:"-"`

@@ -1,12 +1,11 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	gorm.Model
+	Model
 
 	Username     string
 	PasswordHash []byte
