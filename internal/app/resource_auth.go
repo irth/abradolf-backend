@@ -61,8 +61,24 @@ func (a *AuthResource) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *AuthResource) Logout(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement AuthResource.Logout
-	w.Write([]byte("logout"))
+	token, ok := r.Context().Value("token").(string)
+	if !ok {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	var authToken models.AuthToken
+	notFound := a.DB.Find(&authToken, models.AuthToken{Token: token}).RecordNotFound()
+	if notFound {
+		w.WriteHeader(http.StatusNoContent)
+	}
+
+	err := a.DB.Delete(&authToken).Error
+	if err != nil {
+		utils.WriteErrorString(w, http.StatusInternalServerError, ErrDatabaseError, "Database error.")
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (a *AuthResource) Register(w http.ResponseWriter, r *http.Request) {

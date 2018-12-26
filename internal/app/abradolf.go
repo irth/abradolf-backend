@@ -30,7 +30,7 @@ func New(db *gorm.DB) *Abradolf {
 }
 
 func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s", time.Now())
+	fmt.Fprintf(w, "Hello World! %s, uid=%s", time.Now(), r.Context().Value("user"))
 }
 
 func (a Abradolf) RegisterHandlers(r *mux.Router) {

@@ -2,11 +2,11 @@ package app
 
 import (
 	"context"
-	"fmt"
-	"github.com/irth/abradolf-backend/internal/db/models"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/irth/abradolf-backend/internal/db/models"
 
 	"github.com/jinzhu/gorm"
 )
@@ -37,7 +37,7 @@ func NewAuthMiddleware(db *gorm.DB) func(http.Handler) http.Handler {
 			}
 
 			ctx := context.WithValue(r.Context(), "user", authToken.UserID)
-			fmt.Println(authToken.UserID)
+			ctx = context.WithValue(ctx, "token", authToken.Token)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
