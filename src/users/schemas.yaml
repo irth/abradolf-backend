@@ -1,0 +1,2 @@
+User:
+  $ref: '../auth/schemas.yaml#/User'

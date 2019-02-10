@@ -1,0 +1,237 @@
+quizzes:
+  get:
+    tags:
+      - Quizzes
+    summary: List public quizzes.
+    operationId: listQuizzes
+    security: []
+    responses:
+      '200':
+        description: A list of all public quizzes.
+        # TODO: pagination
+        content:
+          application/json:
+            schema:
+              properties:
+                quizzes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Quiz ID.
+                      name:
+                        type: string
+                        description: Quiz name.
+                      author:
+                        type: string
+                        description: Quiz author's username.
+            example:
+              quizzes:
+                - id: 2
+                  name: Abrahalm Lincoln knowledge test
+                  author: abe1809
+                - id: 7
+                  name: World War 2 quiz
+                  author: wchurch
+  post:
+    tags:
+      - Quizzes
+    summary: Create a quiz.
+    operationId: createQuiz
+    requestBody:
+      description: Quiz metadata
+      required: true
+      content:
+        application/json:
+          schema:
+            required:
+              - name
+              - private
+            properties:
+              name:
+                type: string
+                description: The quiz's title.
+                example: Fortnite dances quiz
+              private:
+                type: boolean
+                description: Whether the quiz should be private, or available to the public. (Defaults to public)
+                example: true
+    responses:
+      '201':
+        description: Created.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas.yaml#/Quiz'
+            example:
+              id: "42"
+              name: Fortnite dances quiz
+              private: true
+      '403':
+        $ref: '../responses.yaml#/Unauthorized'
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'
+quiz:
+  get:
+    tags:
+      - Quizzes
+    summary: Get information about a quiz.
+    operationId: getQuiz
+    parameters:
+      - $ref: 'parameters.yaml#/quizId'
+    security:
+      - {}
+      - auth_token: []
+    responses:
+      '200':
+        description: OK.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas.yaml#/Quiz'
+            example:
+              id: "42"
+              name: Fortnite dances quiz
+              private: true
+      '403':
+        $ref: '../responses.yaml#/Unauthorized'
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'
+  delete:
+    tags:
+      - Quizzes
+    summary: Delete a quiz.
+    operationId: deleteQuiz
+    parameters:
+      - $ref: 'parameters.yaml#/quizId'
+    responses:
+      '200':
+        $ref: '../responses.yaml#/Success'
+      '404':
+        $ref: '../responses.yaml#/NotFound'
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'
+
+questions:
+  get:
+    tags:
+      - Quizzes
+    summary: List questions in a quiz.
+    operationId: listQuestions
+    parameters:
+      - $ref: 'parameters.yaml#/quizId'
+    responses:
+      '200':
+        description: OK.
+        content:
+          application/json:
+            schema:
+              properties:
+                questions:
+                  type: array
+                  items:
+                    $ref: 'schemas.yaml#/Question'
+            example:
+              questions:
+                - id: "2"
+                  text: "What is the answer?"
+                  answers:
+                    - id: "8"
+                      text: Six
+                      correct: false
+                    - id: "1"
+                      text: "8"
+                      correct: false
+                    - id: "2654"
+                      text: "Twenty-five"
+                      correct: false
+                    - id: "12"
+                      text: "42"
+                      correct: true
+      '403':
+        $ref: '../responses.yaml#/Unauthorized'
+      '404':
+        $ref: '../responses.yaml#/NotFound'
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'
+  post:
+    tags:
+      - Quizzes
+    summary: Create a question.
+    operationId: createQuestion
+    parameters:
+      - $ref: 'parameters.yaml#/quizId'
+    requestBody:
+      required: true
+      description: The question to be added.
+      content:
+        application/json:
+          schema:
+            required:
+              - text
+              - correct
+            properties:
+              text:
+                type: string
+                description: The question text.
+              correct:
+                type: boolean
+                description: Whether the question is a correct answer.
+          example:
+            text: Yes.
+            correct: false
+    responses:
+      '201':
+        description: Created.
+        content:
+          application/json:
+            schema:
+             $ref: 'schemas.yaml#/Question'
+      '403':
+        $ref: '../responses.yaml#/Unauthorized'
+      '404':
+        $ref: '../responses.yaml#/NotFound'
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'
+
+question:
+  get:
+    tags:
+      - Quizzes
+    summary: Get a question.
+    operationId: getQuestion
+    parameters:
+      - $ref: 'parameters.yaml#/quizId'
+      - $ref: 'parameters.yaml#/questionId'
+    responses:
+      '200':
+        description: OK.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas.yaml#/Question'
+      '403':
+        $ref: '../responses.yaml#/Unauthorized'
+      '404':
+        $ref: '../responses.yaml#/NotFound'
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'
+  delete:
+    tags:
+      - Quizzes
+    summary: Delete a question.
+    operationId: deleteQuestion
+    parameters:
+      - $ref: 'parameters.yaml#/quizId'
+      - $ref: 'parameters.yaml#/questionId'
+    responses:
+      '200':
+        $ref: '../responses.yaml#/Success'
+      '403':
+        $ref: '../responses.yaml#/Unauthorized'
+      '404':
+        $ref: '../responses.yaml#/NotFound'
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'

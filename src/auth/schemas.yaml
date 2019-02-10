@@ -1,0 +1,48 @@
+User:
+  allOf:
+    - $ref: '#/Username'
+    - $ref: '#/Email'
+    - required:
+        - id
+      properties:
+        id:
+          type: string
+          description: The user's unique ID.
+
+AuthToken:
+  properties:
+    auth_token:
+      type: string
+      description: "the bearer token used in the Authentication headers"
+    expires:
+      type: number
+      description: "the expiration date in the RFC 3339 format"
+  example:
+    auth_token: "AL$Kh&df(o832if-ASFj9a8fasifAS-Ff4512"
+    expires: "2019-01-31T21:51:44.737749+01:00"
+
+Username:
+  required:
+    - username
+  properties:
+    username:
+      type: string
+      description: The user's username.
+      example: "TestUser"
+Password:
+  required:
+    - password
+  properties:
+    password:
+      type: string
+      description: The user's password.
+      example: "correct horse battery staple"
+Email:
+  required:
+    - email
+  properties:
+    email:
+      type: string
+      description: The user's email address.
+      example: foo@example.com
+

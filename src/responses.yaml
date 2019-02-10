@@ -1,0 +1,44 @@
+NotFound:
+  description: Not found.
+  content:
+    application/json:
+      schema:
+        $ref: 'schemas.yaml#/Error'
+      example:
+        error: Not found.
+        code: ERR_NOT_FOUND
+        
+Unauthorized:
+  description: Unauthorized.
+  content:
+    application/json:
+      schema:
+        $ref: 'schemas.yaml#/Error'
+      example:
+        error: Unauthorized.
+        code: ERR_UNAUTHORIZED
+
+InternalServerError:
+  description: An internal server error.
+  content:
+    application/json:
+      schema:
+        $ref: 'schemas.yaml#/Error'
+      examples:
+        Internal server error:
+          value:
+            error: Internal server errror.
+            code: ERR_UNKNOWN
+        Database error:
+          value:
+            error: Database error.
+            code: ERR_DATABASE
+Success:
+  description: Success.
+  content:
+    application/json:
+      schema:
+        properties:
+          success:
+            type: boolean
+            enum: [true]

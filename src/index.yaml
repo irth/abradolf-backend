@@ -1,0 +1,50 @@
+openapi: "3.0.2"
+
+info:
+  version: 0.0.1
+  title: Abradolf API
+  description: The Abradolf backend server API
+
+servers:
+  - url: https://localhost:8080
+
+tags:
+  - name: Auth
+    description: Endpoints used to manage auth tokens and register accounts.
+  - name: Quizzes
+    description: Endpoints used to manage quizzes.
+  - name: Users
+    description: Endpoints used to manage users.
+
+paths:
+  /login:
+    $ref: 'auth/routes.yaml#/login'
+  /register:
+    $ref: 'auth/routes.yaml#/register'
+  /logout:
+    $ref: 'auth/routes.yaml#/logout'
+
+
+  /quizzes:
+    $ref: 'quizzes/routes.yaml#/quizzes'
+  /quizzes/{id}:
+    $ref: 'quizzes/routes.yaml#/quiz'
+  /quizzes/{id}/questions:
+    $ref: 'quizzes/routes.yaml#/questions'
+  /quizzes/{id}/questions/{qid}:
+    $ref: 'quizzes/routes.yaml#/question'
+
+  /users:
+    $ref: 'users/routes.yaml#/list'
+  /users/{id}:
+    $ref: 'users/routes.yaml#/get'
+
+components:
+  securitySchemes:
+    auth_token:
+      type: http
+      scheme: bearer
+      description: Use the auth_token returned by `/login`.
+
+security:
+  - auth_token: []

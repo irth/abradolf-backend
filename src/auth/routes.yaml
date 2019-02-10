@@ -1,0 +1,88 @@
+login:
+  post:
+    tags:
+      - Auth
+    summary: Obtain an auth token.
+    operationId: login
+    requestBody:
+      description: User's credentials.
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - title: w/ email
+                allOf:
+                  - $ref: 'schemas.yaml#/Email'
+                  - $ref: 'schemas.yaml#/Password'
+              - title: w/ username
+                allOf:
+                  - $ref: 'schemas.yaml#/Username'
+                  - $ref: 'schemas.yaml#/Password'
+    responses:
+      '200':
+        description: Auth token.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas.yaml#/AuthToken'
+      '403':
+        description: Unauthorized.
+        content:
+          application/json:
+            schema:
+              $ref: '../responses.yaml#/Unauthorized'
+            example:
+              error: "Incorrect username or password."
+              code: "ERR_UNAUTHORIZED"
+      '500':
+        $ref: '../responses.yaml#/InternalServerError'
+    security: []
+
+logout:
+  post:
+    tags:
+      - Auth
+    summary: Invalidate an auth token.
+    operationId: logout
+    responses:
+      '204':
+        description: Success. No content.
+
+register:
+  post:
+    tags:
+      - Auth
+    summary: Create an account.
+    operationId: register
+    security: []
+    requestBody:
+      description: User's credentials.
+      required: true
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: 'schemas.yaml#/Email'
+              - $ref: 'schemas.yaml#/Username'
+              - $ref: 'schemas.yaml#/Password'
+    responses:
+      '201':
+        $ref: '../responses.yaml#/Success'
+      '422':
+        description: Validation error.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas.yaml#/Error'
+            examples:
+              Username empty:
+                value:
+                  error: Username cannot be empty.
+                  code: ERR_USERNAME_EMPTY
+              Username taken:
+                value:
+                  error: Username already taken.
+                  code: ERR_USERNAME_TAKEN
+      '500':
+        '$ref': '../responses.yaml#/InternalServerError'

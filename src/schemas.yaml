@@ -1,0 +1,8 @@
+Error:
+  properties:
+    error:
+      description: Human readable error.
+      type: string
+    code:
+      description: Error ID (See examples.)
+      type: string

@@ -1,0 +1,37 @@
+# Quiz related schemas
+Quiz:
+  properties:
+    id:
+      type: string
+      description: The quiz's unique ID.
+    name:
+      type: string
+      description: The quiz's title.
+    private:
+      type: boolean
+      description: This field determines whether the quiz should be available to the public.
+
+Question:
+  properties:
+    id:
+      type: string
+      description: The question's unique ID.
+    text:
+      type: string
+      description: The question's text.
+    answers:
+      type: array
+      items:
+        $ref: '#/Answer'
+
+Answer:
+  properties:
+    id:
+      type: string
+      description: The answer's unique ID.
+    text:
+      type: string
+      description: The answer's text.
+    correct:
+      type: boolean
+      description: This field determines whether the answer is correct.
